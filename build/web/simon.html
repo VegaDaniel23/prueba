@@ -1,0 +1,278 @@
+<html>
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="description" content="description">
+        <meta name="keywords" content="IDE,LIFIA">
+        <meta name="author" content="author">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+        <script src="js/jquery.2.1.4.min.js" type="text/javascript"></script>
+        <script src="js/jquery-ui.min.js" type="text/javascript"></script>
+        <script src="js/main.js" type="text/javascript"></script>
+        <script src="js/Promise.min.js" type="text/javascript"></script>
+        <link rel="shortcut icon" href="favicon.ico">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/twentytwenty.css">
+        <link rel="stylesheet" href="css/jquery-ui.min.css">
+
+        <script type='text/javascript'>
+            window.onload = function () {
+                var action;
+
+                var slider = $("#slider");
+                slider.slider({
+                    range: "max",
+                    min: 75,
+                    max: 100,
+                    value: DEFAULT_QUALITY,
+                    slide: function (event, ui) {
+                        $('.quality').find('.label').html('Quality: ' + ui.value);
+                    }
+                });
+
+                $("#image-file").change(function () {
+                    var container = $('.wrapper');
+                    container.removeClass('compress decompress superresolution');
+                    container.addClass(action);
+
+                    readURL(this, function (err, file) {
+                        var form = $("#uploadForm");
+                        if (!err) {
+                            var formData = new FormData(form[0]);
+                            showConfiguration(action, file, formData);
+                        } else {
+                            showError(err.message);
+                        }
+
+                        // Reset form values
+                        form.wrap('<form>').closest('form').get(0).reset();
+                        form.unwrap();
+                    });
+                });
+
+                $(".actions .item").click(function () {
+                    action = $(this).attr('data-action');
+                    $("#image-file").trigger('click');
+                });
+
+                $(".goBack").click(showActions);
+
+            }
+            $(function () {
+                $('a[href*=#]:not([href=#])').click(function () {
+                    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+                        var target = $(this.hash);
+                        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                        if (target.length) {
+                            $('html,body').animate({
+                                scrollTop: target.offset().top - 130
+                            }, 1000);
+                            return false;
+                        }
+                    }
+                });
+            });
+        </script>
+        <title>Simon Labs</title>
+    </head>
+    <body>
+        <header>
+            <div class="title">
+                <div class="logowrapper">
+                    <img class="logo" src="imgs/logo.png" alt="">
+                </div>
+                <nav class="cont">
+                    <a href="simon.html#home" style="margin-left: 0px;">Home</a>
+                    <span class="sep"></span>
+                    <a href="simon.html#demo">Ro3 DEMO</a>
+                    <span class="sep"></span>
+                    <a href="simon.html#staff">STAFF</a>
+                    <span class="sep"></span>
+                    <a href="simon.html#contact">CONTACT</a>
+                </nav>
+            </div>
+        </header>
+        <div class="section group">
+
+            <div id="home">
+
+                <h2>Simon Labs Corporation develops and implements algorithms for data, image and video compression.</h2>
+                <p>We are based in USA & Argetnain and have 20 years of experience developing solutions to improve the use of bandwith to keep pace with the explosion of demand for media files access, storage, and transmission.</p>
+                <p>On December 2011, our Chief Scientific Officer (Mario Mastriani) ccarried out successfully the first international 1080p-3D quality video broadcasting in DTT. The compression cattalyzer he developed proved to be able to send 1080p-3D in 1080i-2D bit-rate (four times more information with the same bandwidth). During 2016, we will develop an App that will allow broadcasting high-resolution video without latency from a smartphone to any screen:</p>
+                <p>http://nextvlatam.com/argentina-tests-a-new-3d-readingtechnology-successfully/?lang=en</p>
+
+
+            </div>
+
+
+            <div id="demo" class="main-container bottom-gradient-box">
+                <form enctype="multipart/form-data" id="uploadForm">
+                    <input style="display: none" id="image-file" type="file" name="upl" accept="image/jpeg"/>
+                </form>
+                <div class="wrapper">
+                    <div class="actions-panel">
+                        <div class="container">
+                            <div class="info">
+                                <span>DEMO</span>
+                                <img src="imgs/ro3.png" alt="">
+                            </div>
+
+                            <div class="actions">
+                                <div class="item compress" data-action="compress">
+                                    <img src="imgs/compression-button.png" alt="">
+                                    <span>Compression</span>
+                                </div>
+                                <div class="item decompress" data-action="decompress">
+                                    <img src="imgs/decompression-button.png" alt="">
+                                    <span>Decompression</span>
+                                </div>
+                                <div class="item"></div>
+                                <div class="item superresolution" data-action="superresolution">
+                                    <img src="imgs/superresolution-button.png" alt="">
+                                    <span>Superresolution</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="image-container">
+                        <div id="config" class="config" style="display: none">
+                            <div class='detail'>
+
+                                <div id="previewContainer" class="preview">
+                                    <div class="img-preview"></div>
+                                </div>
+
+                                <div class="options">
+                                    <div class="button-container">
+                                        <div id="config-action" class="button">
+                                            <img src="" alt="">
+                                            <span></span>
+                                        </div>
+                                        <div class="button goBack">
+                                            <img src="imgs/cancel.png" alt="">
+                                            <span>Cancel</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings">
+                                        <div id="deblur-option" class="deblur">
+                                            <span>Deblur</span>
+                                            <input type="checkbox" id="deblur" name="deblur" />
+                                            <label for="deblur"></label>
+                                        </div>
+                                        <div class="quality">
+                                            <span class="label"> Quality: 95</span>
+                                            <div id="slider" class="slider"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="upload-progress-container" style="display: none">
+                                <div id="progress" class="upload-progress">
+                                    <div class="progress-bar"><span class="progressCounter"></span></div>
+                                    <div class="label"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id='result' class='result' style='display: none'>
+                        <div class="wrapper">
+                            <div id='imgWrp' class='img-wrapper'>
+                                <img id="before" src="" alt="">
+                                <img id="after" src="" alt="">
+                            </div>
+
+                            <div class='twentytwenty-handle'>
+                                <span class='twentytwenty-left-arrow'></span>
+                                <span class='twentytwenty-right-arrow'></span>
+                            </div>
+                            <div id='orig' class='labelC before'>
+                                <span id='originalLabel' class='l'></span>
+                                <span id='originalSize' class='size'></span>
+                            </div>
+                            <div class='labelC after'>
+                                <span class='l'></span>
+                                <span class='size'></span>
+                            </div>
+                        </div>
+
+                        <div class="infos">
+                            <div class="progress-bar"><span class="progressCounter"></span></div>
+                        </div>
+
+                        <div class="button-container">
+                            <a id="download" class="button">
+                                <img src="imgs/download.png" alt="">
+                                <span>Download photo</span>
+                            </a>
+                            <div id= "goBack" class="button goBack">
+                                <img src="imgs/goback.png" alt="">
+                                <span>Go back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="staff" >
+
+                <div class="est-tit">People</div>
+                <div >
+                    <div >
+                        <span>Flavio dominguez</span>
+                        <p>15+ years devveloping buisiness in LatinAmerica. (International Trade Bachelor, Master in selling, MBAcandidate, & National Strategic Intelligence Master ccandidate). http://ar.linkedin.com/in/flaviodominguez</p>
+                        <p>Snowborder</p>
+                    </div>		
+
+                    <div >
+                        <span>Flavio dominguez</span>
+                        <p>15+ years devveloping buisiness in LatinAmerica. (International Trade Bachelor, Master in selling, MBAcandidate, & National Strategic Intelligence Master ccandidate). http://ar.linkedin.com/in/flaviodominguez</p>
+                        <p>Snowborder</p>
+                    </div>		
+
+                    <div >
+                        <span>Flavio dominguez</span>
+                        <p>15+ years devveloping buisiness in LatinAmerica. (International Trade Bachelor, Master in selling, MBAcandidate, & National Strategic Intelligence Master ccandidate). http://ar.linkedin.com/in/flaviodominguez</p>
+                        <p>Snowborder</p>
+                    </div>		
+
+                </div>		
+
+            </div>
+
+            <div id="contact" class="footer">
+
+                <div class="inner">
+                    <div class="box uno">
+                        <img src="imgs/mail.png" alt="">
+                        <div>
+                            <div class="txt">
+                                <span>Simon Labs Corporation</span>
+                                <span class="comment">16192 Coastal Hwy, Lewes, DE 19958 USA</span>
+                            </div>
+                            <div class="txt">
+                                <span>Simon Labs SA</span>
+                                <span class="comment">Iriarte 1528, Autonomous City of Buenos Aires, Argentina</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box dos">
+                        <img src="imgs/phone.png" alt="">
+                        <span>+54911 67595967</span>
+                    </div>
+                    <div class="box tres">
+                        <img src="imgs/arroba.png" alt="">
+                        <span>hello@simonlabs.co</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
